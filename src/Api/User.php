@@ -7,9 +7,11 @@ use ApexLegends\Client;
 class User extends AbstractApi 
 {
 	const USER_ID_SEARCH_URL = 'https://api1.origin.com/atom/users';
+    const USER_AVATAR_URL = 'https://api1.origin.com/avatar/user/%s/avatars?size=2';
 
-	private $account;
+    private $account;
 	private $userId;
+	private $avatar = '';
 
 	public function __construct(Client $client, int $userId) 
 	{
@@ -72,4 +74,21 @@ class User extends AbstractApi
 	{
 		return $this->userId;
 	}
+    /**
+     * Get EA account's user avatar.
+     *
+     * @return string User avatar (empty if error)
+     */
+    public function avatar() : string
+    {
+        if ($this->avatar === '')
+        {
+            $data = $this->get(sprintf(self::USER_AVATAR_URL, $this->id()));
+            if (isset($data->user->avatar->link)) {
+                $this->avatar = $data->user->avatar->link;
+            }
+        }
+
+        return $this->avatar;
+    }
 }
